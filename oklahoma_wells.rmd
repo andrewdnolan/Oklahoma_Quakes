@@ -1,0 +1,60 @@
+---
+title: "Oklahoma Earthquakes and Saltwater Injection Wells"
+author: "Andrewdnolan"
+date: "4/12/2019"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+This is an [Kaggle dataset](https://www.kaggle.com/ksuchris2000/oklahoma-earthquakes-and-saltwater-injection-wells). 
+
+```{r, message=FALSE}
+library(tidyverse)
+well_df <- read_csv('oklahoma-earthquakes-and-saltwater-injection-wells/InjectionWells.csv')
+
+wells <- well_df %>% filter(LONG > -140 & LONG < -50) 
+
+quake_df <- read_csv('oklahoma-earthquakes-and-saltwater-injection-wells/okQuakes.csv')
+```
+
+```{r}
+library(maps)
+library(mapdata)
+library(ggthemes)
+
+roi <- map_data('county') %>%
+    as.data.frame() %>%
+    filter(region == 'oklahoma' )
+
+wells %>% 
+  mutate(subregion = tolower(County)) %>% 
+  group_by(subregion) %>% 
+  summarize(n_wells = n()) %>% 
+  right_join(roi, by = c('subregion')) %>%
+  ggplot(aes(x=long, y = lat, group = group, fill = n_wells)) +
+  geom_polygon() + 
+  geom_path(color = 'white', size = 0.1) + 
+  scale_fill_continuous(low = "orange", 
+                          high = "darkred",
+                          name = 'Injection Wells \nper county', 
+                        trans = "log10") +
+  theme_map() + 
+  coord_map('albers', lat0=30, lat1=40) +
+  ggtitle("Saltwater injection well per county") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+```{r}
+roi2 <- map_data('county') %>%
+    as.data.frame() %>%
+    filter(region == 'oklahoma' |  region == 'texas' | region == 'arkansas' | region == 'nebraska' | region == 'kansas' |
+           region == 'new mexico' | region == 'colorado' | region == 'missouri')
+
+ggplot() + geom_polygon(roi2, mapping = aes(x = long, y = lat, group = group)) + 
+  geom_point(data = quake_df, aes(x = longitude, y = latitude)) +
+  coord_map('albers', lat0=30, lat1=40)  
+
+```
