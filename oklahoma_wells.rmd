@@ -11,11 +11,11 @@ This is an [Kaggle dataset](https://www.kaggle.com/ksuchris2000/oklahoma-earthqu
 
 ```{r, message=FALSE}
 library(tidyverse)
-well_df <- read_csv('oklahoma-earthquakes-and-saltwater-injection-wells/InjectionWells.csv')
+well_df <- read_csv('data/InjectionWells.csv')
 
 wells <- well_df %>% filter(LONG > -140 & LONG < -50) 
 
-quake_df <- read_csv('oklahoma-earthquakes-and-saltwater-injection-wells/okQuakes.csv')
+quake_df <- read_csv('data/okQuakes.csv')
 ```
 
 ```{r}
