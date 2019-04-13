@@ -67,3 +67,9 @@ ggplot(data = quake_df) +
   coord_flip() + 
   labs(x = '', y = 'Number of Quakes', title = 'Greater Oklahoma Area Quakes by from 1977 to 2015')
 ```
+
+[help with maps](http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html)
+
+[idea for the maps / plots to make](https://www.kaggle.com/captcalculator/wildfire-exploratory-analysis)
+
+
