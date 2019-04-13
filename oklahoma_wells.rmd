@@ -72,4 +72,6 @@ ggplot(data = quake_df) +
 
 [idea for the maps / plots to make](https://www.kaggle.com/captcalculator/wildfire-exploratory-analysis)
 
+[USGS maps source](https://mrdata.usgs.gov/geology/state/)
+
 
