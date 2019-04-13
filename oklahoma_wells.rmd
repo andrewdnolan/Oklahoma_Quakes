@@ -74,4 +74,6 @@ ggplot(data = quake_df) +
 
 [USGS maps source](https://mrdata.usgs.gov/geology/state/)
 
+[USGS geophysical data](https://mrdata.usgs.gov/airborne/map-us.html)
+
 
