@@ -11,11 +11,12 @@ This is an [Kaggle dataset](https://www.kaggle.com/ksuchris2000/oklahoma-earthqu
 
 ```{r, message=FALSE}
 library(tidyverse)
-well_df <- read_csv('data/InjectionWells.csv')
 
+well_df <- read_csv('data/InjectionWells.csv')
 wells <- well_df %>% filter(LONG > -140 & LONG < -50) 
 
 quake_df <- read_csv('data/okQuakes.csv')
+quake_df <- quake_df %>% drop_na(mag)
 ```
 
 ```{r}
@@ -48,13 +49,21 @@ wells %>%
 
 
 ```{r}
-roi2 <- map_data('county') %>%
-    as.data.frame() %>%
-    filter(region == 'oklahoma' |  region == 'texas' | region == 'arkansas' | region == 'nebraska' | region == 'kansas' |
-           region == 'new mexico' | region == 'colorado' | region == 'missouri')
+roi2 <- map_data('county') #%>%
+    # as.data.frame() %>%
+    # filter()
 
 ggplot() + geom_polygon(roi2, mapping = aes(x = long, y = lat, group = group)) + 
-  geom_point(data = quake_df, aes(x = longitude, y = latitude)) +
+  geom_point(data = quake_df, aes(x = longitude, y = latitude, color = mag )) +
   coord_map('albers', lat0=30, lat1=40)  
+```
 
+
+```{r}
+library(lubridate)
+
+ggplot(data = quake_df) +
+  geom_bar( mapping = aes(x = year(time), y = floor(mag)), stat="identity" , fill = 'orange') +
+  coord_flip() + 
+  labs(x = '', y = 'Number of Quakes', title = 'Greater Oklahoma Area Quakes by from 1977 to 2015')
 ```
