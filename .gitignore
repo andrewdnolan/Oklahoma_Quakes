@@ -32,8 +32,8 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 
-#Dir test
-test/
+#Shape file directory
+data/shp/
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
