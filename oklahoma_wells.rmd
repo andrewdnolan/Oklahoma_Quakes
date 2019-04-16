@@ -55,6 +55,7 @@ roi2 <- map_data('county') #%>%
 
 ggplot() + geom_polygon(roi2, mapping = aes(x = long, y = lat, group = group)) + 
   geom_point(data = quake_df, aes(x = longitude, y = latitude, color = mag )) +
+  annotation_map_tile(type = "osm") +
   coord_map('albers', lat0=30, lat1=40)  
 ```
 
@@ -75,5 +76,9 @@ ggplot(data = quake_df) +
 [USGS maps source](https://mrdata.usgs.gov/geology/state/)
 
 [USGS geophysical data](https://mrdata.usgs.gov/airborne/map-us.html)
+
+[giffs](https://ryanpeek.github.io/2016-10-19-animated-gif_maps_in_R/)
+
+[efficent searching in dataframe](geopandas.org/reference/geopandas.overlay.html)
 
 
