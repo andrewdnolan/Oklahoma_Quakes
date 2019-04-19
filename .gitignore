@@ -37,3 +37,6 @@ data/shp/
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+
+# Jupyter notebook stuff
+*.ipynb_checkpoints/
