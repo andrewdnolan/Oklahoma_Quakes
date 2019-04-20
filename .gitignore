@@ -40,3 +40,6 @@ rsconnect/
 
 # Jupyter notebook stuff
 *.ipynb_checkpoints/
+
+# OSX
+.DS_Store
