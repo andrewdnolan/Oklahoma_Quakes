@@ -1,0 +1,83 @@
+---
+title: "Oklahoma Quakes"
+author: "Andrew d Nolan"
+date: "4/23/2019"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, message=FALSE, echo = FALSE}
+library(tidyverse)
+
+well_df <- read_csv('data/InjectionWells_w_geology.csv')
+wells <- well_df %>% filter(LONG > -140 & LONG < -50)
+
+quake_df <- read_csv('data/okQuakes.csv')
+quake_df <- quake_df %>% drop_na(mag)
+```
+## Dataset Description
+This dataset was downloaded from the [Oklahoma Earthquakes and Saltwater Injection Wells](https://www.kaggle.com/ksuchris2000/oklahoma-earthquakes-and-saltwater-injection-wells) repository of Kaggle. It contains two `.csv` files:
+
+## Quakes with Time 
+
+![](http://i.imgur.com/Ssfp7.gif)
+
+## Earth Quake `.csv`
+```{r}
+knitr::kable(
+head(quake_df)
+)
+```
+
+## Injection Well `.csv`
+```{r}
+knitr::kable(
+head(well_df)
+)
+```
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Output
+
+```{r, message=FALSE}
+library(maps)
+library(mapdata)
+library(ggthemes)
+
+roi <- map_data('county') %>%
+    as.data.frame() %>%
+    filter(region == 'oklahoma' )
+
+wells %>% 
+  mutate(subregion = tolower(County)) %>% 
+  group_by(subregion) %>% 
+  summarize(n_wells = n()) %>% 
+  right_join(roi, by = c('subregion')) %>%
+  ggplot(aes(x=long, y = lat, group = group, fill = n_wells)) +
+  geom_polygon() + 
+  geom_path(color = 'white', size = 0.1) + 
+  scale_fill_continuous(low = "orange", 
+                          high = "darkred",
+                          name = 'Injection Wells \nper county', 
+                        trans = "log10") +
+  theme_map() + 
+  coord_map('albers', lat0=30, lat1=40) +
+  ggtitle("Saltwater injection well per county") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+

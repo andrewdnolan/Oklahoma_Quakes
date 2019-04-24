@@ -12,11 +12,12 @@ This is an [Kaggle dataset](https://www.kaggle.com/ksuchris2000/oklahoma-earthqu
 ```{r, message=FALSE}
 library(tidyverse)
 
-well_df <- read_csv('data/InjectionWells.csv')
+well_df <- read_csv('data/InjectionWells_w_geology.csv')
 wells <- well_df %>% filter(LONG > -140 & LONG < -50) 
 
-quake_df <- read_csv('data/okQuakes.csv')
-quake_df <- quake_df %>% drop_na(mag)
+quake_df <- read_csv('data/okQuakes_w_geology.csv')
+quakes <- quake_df %>% drop_na(mag, STATE) 
+
 ```
 
 ```{r}
@@ -49,19 +50,27 @@ wells %>%
 
 
 ```{r}
-roi2 <- map_data('county') #%>%
-    # as.data.frame() %>%
-    # filter()
+roi2 <- map_data('state', c('oklahoma', 'texas', 'new mexico', 'kansas', 'colorado', 'missouri', 'arkansas', 'louisiana')) %>%
+    as.data.frame() 
 
-ggplot() + geom_polygon(roi2, mapping = aes(x = long, y = lat, group = group)) + 
-  geom_point(data = quake_df, aes(x = longitude, y = latitude, color = mag )) +
-  annotation_map_tile(type = "osm") +
-  coord_map('albers', lat0=30, lat1=40)  
+quakes$region <- map_chr(quakes$STATE, function(x) { tolower(state.name[grep(x, state.abb)]) })
+
+quakes %>% filter(mag > 2.5) %>% 
+  select(region) %>% group_by(region) %>% 
+  summarise(n_quakes = n()) %>% right_join(roi2, by = c('region')) %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = n_quakes)) + geom_polygon() + 
+    geom_path(color = 'white', size = 0.1) + 
+    scale_fill_continuous(low = "orange", 
+                          high = "darkred",
+                          name = 'Number of Quakes') + 
+  theme_map() + 
+  coord_map('albers', lat0=30, lat1=40) 
+
 ```
 
 
 ```{r}
-library(lubridate)
+#library(lubridate)
 
 ggplot(data = quake_df) +
   geom_bar( mapping = aes(x = year(time), y = floor(mag)), stat="identity" , fill = 'orange') +
@@ -69,6 +78,18 @@ ggplot(data = quake_df) +
   labs(x = '', y = 'Number of Quakes', title = 'Greater Oklahoma Area Quakes by from 1977 to 2015')
 ```
 
+```{r}
+library(lubridate)
+quakes_sub <- quakes[1:200,]
+wells_sub <- wells[1:200, ]
+wells_sub$`Approval Date` <- mdy(wells_sub$`Approval Date`)
+
+
+active_wells <- wells_sub %>% filter(`Approval Date`< quakes_sub$time[1])
+dist_vec <- distHaversine(c(quakes_sub$longitude[1], quakes_sub$latitude[1]), active_wells %>% select(LONG, LAT))
+active_wells[which.min(dist_vec), 24:30]
+
+```
 [help with maps](http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html)
 
 [idea for the maps / plots to make](https://www.kaggle.com/captcalculator/wildfire-exploratory-analysis)
@@ -80,5 +101,7 @@ ggplot(data = quake_df) +
 [giffs](https://ryanpeek.github.io/2016-10-19-animated-gif_maps_in_R/)
 
 [efficent searching in dataframe](geopandas.org/reference/geopandas.overlay.html)
+
+[distance opperations](https://stackoverflow.com/questions/31668163/geographic-geospatial-distance-between-2-lists-of-lat-lon-points-coordinates)
 
 
