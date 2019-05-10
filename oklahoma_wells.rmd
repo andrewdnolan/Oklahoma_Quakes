@@ -20,7 +20,7 @@ quakes <- quake_df %>% drop_na(mag, STATE)
 
 ```
 
-```{r}
+```{r, message=FALSE}
 library(maps)
 library(mapdata)
 library(ggthemes)
@@ -79,15 +79,29 @@ ggplot(data = quake_df) +
 ```
 
 ```{r}
+library(geosphere)
 library(lubridate)
 quakes_sub <- quakes[1:200,]
 wells_sub <- wells[1:200, ]
 wells_sub$`Approval Date` <- mdy(wells_sub$`Approval Date`)
 
+well_geology <- paste('well',names(wells_sub)[24:30], sep = "_")
+well_info <- names(wells_sub)[c(5, 9, 10, 17, 18)]
+quakes_sub[,c(well_info, well_geology)] = NA
+
+nearest_well <- function(row,well_df){
+  print(row)
+  # active_wells <- well_df %>% filter(`Approval Date`< row[9])
+  # dist_vec <- distHaversine(c(row[16], row[15]), active_wells %>% select(LONG, LAT))
+  # row[,31:43] <- active_wells[which.min(dist_vec), c(5, 9, 10, 17, 18, 24:30)]
+}
+
+
 
 active_wells <- wells_sub %>% filter(`Approval Date`< quakes_sub$time[1])
 dist_vec <- distHaversine(c(quakes_sub$longitude[1], quakes_sub$latitude[1]), active_wells %>% select(LONG, LAT))
-active_wells[which.min(dist_vec), 24:30]
+quakes_sub[,31:43] <- active_wells[which.min(dist_vec), c(5, 9, 10, 17, 18, 24:30)]
+
 
 ```
 [help with maps](http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html)
